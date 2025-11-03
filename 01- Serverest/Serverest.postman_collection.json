@@ -1,0 +1,292 @@
+{
+	"info": {
+		"_postman_id": "fa024915-275b-4692-891b-1f6e31df25c2",
+		"name": "Serverest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44766429"
+	},
+	"item": [
+		{
+			"name": "Endpoint Usuários",
+			"item": [
+				{
+					"name": "Lista usuário",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/usuarios",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Usuários (admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Ciclano da Silva\",\r\n  \"email\": \"ciclanosilva@qa.com.br\",\r\n  \"password\": \"teste\",\r\n  \"administrador\": \"true\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/usuarios",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar usuários",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/usuarios",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login (admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://serverest.dev/login",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Endpoint Produtos",
+			"item": [
+				{
+					"name": "Listar produtos",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/produtos",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"produtos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar produto aut",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const postRequestUs = {\r",
+									"    url: pm.environment.get(\"BASE_URL\") + \"/usuarios\",\r",
+									"    method: \"POST\",\r",
+									"    body: {\r",
+									"        mode:\"raw\",\r",
+									"        options: {\r",
+									"            raw: {\r",
+									"                language: \"json\"\r",
+									"            }\r",
+									"        },\r",
+									"        raw: JSON.stringify({\r",
+									"            nome: \"Ciclano da Silva\",\r",
+									"            email: \"ciclanosilva@qa.com.br\",\r",
+									"            password: \"teste\",\r",
+									"            administrador: \"true\"\r",
+									"        })\r",
+									"    }\r",
+									"}\r",
+									"pm.sendRequest(postRequestUs, function(err, res){\r",
+									"    pm.globals.set(\"usuarios\",\"ciclanosilva\")\r",
+									"})\r",
+									"\r",
+									"\r",
+									"const postRequest = {\r",
+									"    url:pm.environment.get(\"BASE_URL\") + \"/login\",\r",
+									"    method: \"POST\",\r",
+									"    body:{\r",
+									"        mode: \"raw\",\r",
+									"        options: {\r",
+									"            raw:{\r",
+									"                language:\"json\"\r",
+									"            }\r",
+									"        },\r",
+									"        raw:JSON.stringify({\r",
+									"            email: \"ciclanosilva@qa.com.br\",\r",
+									"            password: \"teste\"\r",
+									"        })\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.sendRequest(postRequest, function(err,res){\r",
+									"    let responseJson = res.json()\r",
+									"    let auth = responseJson[\"authorization\"].split(\" \")\r",
+									"    console.log(auth[1])\r",
+									"    pm.globals.set(\"token\", auth[1])\r",
+									"\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"luva\",\r\n  \"preco\": 50,\r\n  \"descricao\": \"mesa\",\r\n  \"quantidade\": 188\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/produtos",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"produtos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Produto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNpY2xhbm9zb3V6YUBxYS5jb20uYnIiLCJwYXNzd29yZCI6InRlc3RlIiwiaWF0IjoxNzYxOTM2OTU4LCJleHAiOjE3NjE5Mzc1NTh9.jP8Ql6LWCJDTLzmEnMoPsXBMXaUidwDzg-ehVle8EXU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nome\": \"Garrafa térmica Azul\",\r\n  \"preco\": 40,\r\n  \"descricao\": \"Garrafa\",\r\n  \"quantidade\": 152\r\n}"
+						},
+						"url": {
+							"raw": "https://serverest.dev/produtos/EE7gsanNZGOJ5B3W",
+							"protocol": "https",
+							"host": [
+								"serverest",
+								"dev"
+							],
+							"path": [
+								"produtos",
+								"EE7gsanNZGOJ5B3W"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
